@@ -180,7 +180,7 @@
 
 /**
  设置是否缓存歌曲
- @param isMemoryCached 洗牌是否需要缓存歌曲
+ @param isMemoryCached 是否需要缓存歌曲
  */
 - (void)enableMemoryCached:(BOOL) isMemoryCached;
 - (BOOL)isMemoryCached;
