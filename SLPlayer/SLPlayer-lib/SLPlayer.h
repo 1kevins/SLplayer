@@ -100,7 +100,7 @@ typedef NS_ENUM(NSUInteger, SLPlayerRepeatMode) {//播放模式
     SLPlayerRepeatModeOff,
 };
 
-typedef NS_ENUM(NSUInteger, SLPlayerShuffleMode) {//洗牌模式
+typedef NS_ENUM(NSUInteger, SLPlayerShuffleMode) {//随机播放模式
     SLPlayerShuffleModeOn = 0,
     SLPlayerShuffleModeOff,
 };
@@ -110,10 +110,10 @@ typedef NS_ENUM(NSUInteger, SLPlayerShuffleMode) {//洗牌模式
 @property (nonatomic) id<SLPlayerDelegate> delegate;
 @property (nonatomic) id<SLPlayerDataSource> datasource;
 @property (nonatomic) NSUInteger itemsCount;
-@property (nonatomic) BOOL disableLogs;
+@property (nonatomic) BOOL disableLogs;//打印日志？
 @property (nonatomic, strong, readonly) NSArray *playerItems;
-@property (nonatomic, readonly) BOOL isInEmptySound;
-@property (nonatomic) BOOL popAlertWhenError;
+@property (nonatomic, readonly) BOOL isInEmptySound; //空音频？
+@property (nonatomic) BOOL popAlertWhenError; //提示错误？
 
 + (SLPlayer *)sharedInstance;
 
@@ -154,40 +154,97 @@ typedef NS_ENUM(NSUInteger, SLPlayerShuffleMode) {//洗牌模式
  注意，删除item 时需要同时更新 SLPlayerNumberOfItems
  */
 
-/*!
- 注意，删除item 时需要同时更新 SLPlayerNumberOfItems
- */
-
-
-
 - (void)removeItemAtIndex:(NSUInteger)index;
 - (void)moveItemFromIndex:(NSUInteger)from toIndex:(NSUInteger)to;
+
+/**
+ 设置播放
+ */
 - (void)play;
+
+/**
+ 设置暂停
+ */
 - (void)pause;
+
+/**
+ 强制暂停
+ 
+ @param forcibly 是否强制暂停
+ 
+ */
 - (void)pausePlayerForcibly:(BOOL)forcibly;
+/**
+   上一首
+ 
+ */
 - (void)playPrevious;
+
+/**
+ 下一首
+ 
+ */
 - (void)playNext;
+/**
+ 播放到某一时刻
+  @param CMTime 时间
+ */
 - (void)seekToTime:(double) CMTime;
 - (void)seekToTime:(double) CMTime withCompletionBlock:(void (^)(BOOL finished))completionBlock;
 
+/**
+ 设置播放模式
+ @param mode 播放模式
+ */
 - (void)setPlayerRepeatMode:(SLPlayerRepeatMode)mode;
 - (SLPlayerRepeatMode)getPlayerRepeatMode;
+/**
+ 设置随机播放模式
+ @param mode 是否随机播放模式
+ */
+
 - (void)setPlayerShuffleMode:(SLPlayerShuffleMode)mode;
 - (SLPlayerShuffleMode)getPlayerShuffleMode;
+/**
+ 是否正在播放
+*/
 
 - (BOOL)isPlaying;
+
+/**
+ 获取当前item
+ 
+ */
 - (AVPlayerItem *)getCurrentItem;
+
+/**
+ 获取当前播放状态
+ */
 - (SLPlayerStatus)getSLPlayerStatus;
 
-- (void)addDelegate:(id<SLPlayerDelegate>)delegate DEPRECATED_MSG_ATTRIBUTE("set delegate property instead");/*
- * Disable memory cache, player will run SourceItemGetter everytime even the media has been played.
- * Default is YES
+/**
+  添加代理
+ */
+- (void)addDelegate:(id<SLPlayerDelegate>)delegate DEPRECATED_MSG_ATTRIBUTE("set delegate property instead");
+/**
+ 设置是否缓存歌曲
+ @param isMemoryCached 洗牌是否需要缓存歌曲
  */
 - (void)enableMemoryCached:(BOOL) isMemoryCached;
 - (BOOL)isMemoryCached;
-- (void)removeDelegate:(id<SLPlayerDelegate>)delegate DEPRECATED_MSG_ATTRIBUTE("Use delegate property instead");;
 
+/**
+ 移除代理
+ */
+- (void)removeDelegate:(id<SLPlayerDelegate>)delegate DEPRECATED_MSG_ATTRIBUTE("Use delegate property instead");;
+/**
+ 获取当前播放时长
+ */
 - (float)getPlayingItemCurrentTime;
+
+/**
+ 获取总时长
+ */
 - (float)getPlayingItemDurationTime;
 - (id)addPeriodicTimeObserverForInterval:(CMTime)interval
                                    queue:(dispatch_queue_t)queue
@@ -195,9 +252,6 @@ typedef NS_ENUM(NSUInteger, SLPlayerShuffleMode) {//洗牌模式
 
 
 
-/*
- * Indicating Playeritem's play index
- */
 - (NSNumber *)getHysteriaIndex:(AVPlayerItem *)item;
 
 - (void)deprecatePlayer;
