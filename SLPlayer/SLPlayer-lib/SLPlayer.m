@@ -1,7 +1,8 @@
 //
 //  SLPlayer.m
 //
-//  Created by saiday on 13/1/8.
+//  Created by kevin on 17/04/28.
+//  Copyright © 2016年 halewinner. All rights reserved.
 //
 //
 
@@ -10,7 +11,7 @@
 #import <objc/runtime.h>
 #import <UIKit/UIKit.h>
 
-static const void *Hysteriatag = &Hysteriatag;
+static const void *SLPlayertag = &SLPlayertag;
 
 @interface SLPlayer ()
 {
@@ -42,7 +43,7 @@ static const void *Hysteriatag = &Hysteriatag;
 
 - (void)longTimeBufferBackground;
 - (void)longTimeBufferBackgroundCompleted;
-- (void)setHysteriaIndex:(AVPlayerItem *)item Key:(NSNumber *)order;
+- (void)setSLPlayerIndex:(AVPlayerItem *)item Key:(NSNumber *)order;
 
 @end
 
@@ -78,7 +79,7 @@ static dispatch_once_t onceToken;
 - (id)init {
     self = [super init];
     if (self) {
-        HBGQueue = dispatch_queue_create("com.hysteria.queue", NULL);
+        HBGQueue = dispatch_queue_create("com.SLPlayer.queue", NULL);
         _playerItems = [NSArray array];
         
         _repeatMode = SLPlayerRepeatModeOff;
@@ -154,9 +155,7 @@ static dispatch_once_t onceToken;
     [self longTimeBufferBackground];
 }
 
-/*
- * Tells OS this application starts one or more long-running tasks, should end background task when completed.
- */
+
 -(void)longTimeBufferBackground
 {
     bgTaskId = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
@@ -183,12 +182,12 @@ static dispatch_once_t onceToken;
 #pragma mark ===========  Runtime AssociatedObject  =========
 #pragma mark -
 
-- (void)setHysteriaIndex:(AVPlayerItem *)item Key:(NSNumber *)order {
-    objc_setAssociatedObject(item, Hysteriatag, order, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+- (void)setSLPlayerIndex:(AVPlayerItem *)item Key:(NSNumber *)order {
+    objc_setAssociatedObject(item, SLPlayertag, order, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
-- (NSNumber *)getHysteriaIndex:(AVPlayerItem *)item {
-    return objc_getAssociatedObject(item, Hysteriatag);
+- (NSNumber *)getSLPlayerIndex:(AVPlayerItem *)item {
+    return objc_getAssociatedObject(item, SLPlayertag);
 }
 
 #pragma mark -
@@ -277,7 +276,7 @@ static dispatch_once_t onceToken;
         return;
     
     dispatch_async(dispatch_get_main_queue(), ^{
-        [self setHysteriaIndex:item Key:[NSNumber numberWithInteger:index]];
+        [self setSLPlayerIndex:item Key:[NSNumber numberWithInteger:index]];
         NSMutableArray *playerItems = [NSMutableArray arrayWithArray:self.playerItems];
         [playerItems addObject:item];
         self.playerItems = playerItems;
@@ -289,7 +288,7 @@ static dispatch_once_t onceToken;
 - (BOOL)findSourceInPlayerItems:(NSUInteger)index
 {
     for (AVPlayerItem *item in self.playerItems) {
-        NSInteger checkIndex = [[self getHysteriaIndex:item] integerValue];
+        NSInteger checkIndex = [[self getSLPlayerIndex:item] integerValue];
         if (checkIndex == index) {
             [item seekToTime:kCMTimeZero completionHandler:^(BOOL finished) {
                 [self insertPlayerItem:item];
@@ -303,7 +302,7 @@ static dispatch_once_t onceToken;
 - (void)prepareNextPlayerItem
 {
     // check before added, prevent add the same songItem
-    NSNumber *currentIndexNumber = [self getHysteriaIndex:self.audioPlayer.currentItem];
+    NSNumber *currentIndexNumber = [self getSLPlayerIndex:self.audioPlayer.currentItem];
     NSUInteger nowIndex = [currentIndexNumber integerValue];
     BOOL findInPlayerItems = NO;
     NSUInteger itemsCount = [self SLPlayerItemsCount];
@@ -359,7 +358,7 @@ static dispatch_once_t onceToken;
 - (void)removeItemAtIndex:(NSUInteger)order
 {
     for (AVPlayerItem *item in [NSArray arrayWithArray:self.playerItems]) {
-        NSUInteger CHECK_order = [[self getHysteriaIndex:item] integerValue];
+        NSUInteger CHECK_order = [[self getSLPlayerIndex:item] integerValue];
         if (CHECK_order == order) {
             NSMutableArray *playerItems = [NSMutableArray arrayWithArray:self.playerItems];
             [playerItems removeObject:item];
@@ -369,7 +368,7 @@ static dispatch_once_t onceToken;
                 [self.audioPlayer removeItem:item];
             }
         }else if (CHECK_order > order){
-            [self setHysteriaIndex:item Key:[NSNumber numberWithInteger:CHECK_order -1]];
+            [self setSLPlayerIndex:item Key:[NSNumber numberWithInteger:CHECK_order -1]];
         }
     }
 }
@@ -377,10 +376,10 @@ static dispatch_once_t onceToken;
 - (void)moveItemFromIndex:(NSUInteger)from toIndex:(NSUInteger)to
 {
     for (AVPlayerItem *item in self.playerItems) {
-        NSUInteger CHECK_index = [[self getHysteriaIndex:item] integerValue];
+        NSUInteger CHECK_index = [[self getSLPlayerIndex:item] integerValue];
         if (CHECK_index == from || CHECK_index == to) {
             NSNumber *replaceOrder = CHECK_index == from ? [NSNumber numberWithInteger:to] : [NSNumber numberWithInteger:from];
-            [self setHysteriaIndex:item Key:replaceOrder];
+            [self setSLPlayerIndex:item Key:replaceOrder];
         }
     }
 }
@@ -427,7 +426,7 @@ static dispatch_once_t onceToken;
             }
         }
     } else {
-        NSNumber *nowIndexNumber = [self getHysteriaIndex:self.audioPlayer.currentItem];
+        NSNumber *nowIndexNumber = [self getSLPlayerIndex:self.audioPlayer.currentItem];
         NSUInteger nowIndex = nowIndexNumber ? [nowIndexNumber integerValue] : self.lastItemIndex;
         if (nowIndex + 1 < [self SLPlayerItemsCount]) {
             if (self.audioPlayer.items.count > 1) {
@@ -450,7 +449,7 @@ static dispatch_once_t onceToken;
 
 - (void)playPrevious
 {
-    NSInteger nowIndex = [[self getHysteriaIndex:self.audioPlayer.currentItem] integerValue];
+    NSInteger nowIndex = [[self getSLPlayerIndex:self.audioPlayer.currentItem] integerValue];
     if (nowIndex == 0)
     {
         if (_repeatMode == SLPlayerRepeatModeOn) {
@@ -504,7 +503,7 @@ static dispatch_once_t onceToken;
             _shuffleMode = SLPlayerShuffleModeOn;
             _playedItems = [NSMutableSet set];
             if (self.audioPlayer.currentItem) {
-                [self.playedItems addObject:[self getHysteriaIndex:self.audioPlayer.currentItem]];
+                [self.playedItems addObject:[self getSLPlayerIndex:self.audioPlayer.currentItem]];
             }
             break;
         default:
@@ -747,7 +746,7 @@ static dispatch_once_t onceToken;
         return;
     }
 
-    NSNumber *CHECK_Order = [self getHysteriaIndex:self.audioPlayer.currentItem];
+    NSNumber *CHECK_Order = [self getSLPlayerIndex:self.audioPlayer.currentItem];
     if (CHECK_Order) {
         if (_repeatMode == SLPlayerRepeatModeOnce) {
             NSInteger currentIndex = [CHECK_Order integerValue];
@@ -774,7 +773,7 @@ static dispatch_once_t onceToken;
                             [self.delegate SLPlayerDidReachEnd];
                         }
                     }
-                    NSNumber *currentIndexNumber = [self getHysteriaIndex:self.audioPlayer.currentItem];
+                    NSNumber *currentIndexNumber = [self getSLPlayerIndex:self.audioPlayer.currentItem];
                     NSUInteger nowIndex = [currentIndexNumber integerValue];
                     [self fetchAndPlayPlayerItem:nowIndex];
                 }
