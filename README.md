@@ -70,12 +70,12 @@
  */
 - (void)setupPlayerItemWithUrl:(NSURL *)url index:(NSUInteger)index;
 
+
 /**
  设置播放第几首
  
  @param startAt 下标
  */
-
 - (void)fetchAndPlayPlayerItem: (NSUInteger )startAt;
 
 
@@ -94,15 +94,18 @@
 - (void)removeItemAtIndex:(NSUInteger)index;
 - (void)moveItemFromIndex:(NSUInteger)from toIndex:(NSUInteger)to;
 
+
 /**
  设置播放
  */
 - (void)play;
 
+
 /**
  设置暂停
  */
 - (void)pause;
+
 
 /**
  强制暂停
@@ -111,17 +114,22 @@
  
  */
 - (void)pausePlayerForcibly:(BOOL)forcibly;
+
+
 /**
    上一首
  
  */
 - (void)playPrevious;
 
+
 /**
  下一首
  
  */
 - (void)playNext;
+
+
 /**
  播放到某一时刻
   @param CMTime 时间
@@ -129,23 +137,26 @@
 - (void)seekToTime:(double) CMTime;
 - (void)seekToTime:(double) CMTime withCompletionBlock:(void (^)(BOOL finished))completionBlock;
 
+
 /**
  设置播放模式
  @param mode 播放模式
  */
 - (void)setPlayerRepeatMode:(SLPlayerRepeatMode)mode;
 - (SLPlayerRepeatMode)getPlayerRepeatMode;
+
+
 /**
  设置随机播放模式
  @param mode 是否随机播放模式
  */
-
 - (void)setPlayerShuffleMode:(SLPlayerShuffleMode)mode;
 - (SLPlayerShuffleMode)getPlayerShuffleMode;
+
+
 /**
  是否正在播放
 */
-
 - (BOOL)isPlaying;
 
 /**
@@ -154,15 +165,19 @@
  */
 - (AVPlayerItem *)getCurrentItem;
 
+
 /**
  获取当前播放状态
  */
 - (SLPlayerStatus)getSLPlayerStatus;
 
+
 /**
   添加代理
  */
 - (void)addDelegate:(id<SLPlayerDelegate>)delegate DEPRECATED_MSG_ATTRIBUTE("set delegate property instead");
+
+
 /**
  设置是否缓存歌曲
  @param isMemoryCached 洗牌是否需要缓存歌曲
@@ -170,19 +185,26 @@
 - (void)enableMemoryCached:(BOOL) isMemoryCached;
 - (BOOL)isMemoryCached;
 
+
 /**
  移除代理
  */
 - (void)removeDelegate:(id<SLPlayerDelegate>)delegate DEPRECATED_MSG_ATTRIBUTE("Use delegate property instead");;
+
+
 /**
  获取当前播放时长
  */
 - (float)getPlayingItemCurrentTime;
 
+
+
 /**
  获取总时长
  */
 - (float)getPlayingItemDurationTime;
+
+
 - (id)addPeriodicTimeObserverForInterval:(CMTime)interval
                                    queue:(dispatch_queue_t)queue
                               usingBlock:(void (^)(CMTime time))block;
