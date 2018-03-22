@@ -16,7 +16,7 @@ Pod::Spec.new do |s|
   #
 
   s.name         = "SLPlayer"
-  s.version      = "0.1.0"
+  s.version      = "0.1.5"
   s.summary      = "SLPlayer 是一个多功能的音乐播放器"
 
 s.homepage     = "https://github.com/1kevins/SLplayer"
