@@ -16,7 +16,7 @@ Pod::Spec.new do |s|
   #
 
   s.name         = "SLPlayer"
-  s.version      = "0.1.2"
+  s.version      = "0.1.3"
   s.summary      = "SLPlayer 是一个多功能的音乐播放器"
 
   # This description is used to generate tags and improve search results.
